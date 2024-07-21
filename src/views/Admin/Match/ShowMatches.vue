@@ -205,44 +205,45 @@ import Paginator from 'primevue/paginator';
 }
     },
     methods: {
-      fetchUsers() {
-        this.loading = true;
-        this.$apollo
-          .query({
-            query: gql`
-              query GetUsers {
-                users {
-                  id
-                  email
-                  firstName
-                  lastName
-                  admin
-                  createdAt
-                  images
-                  matches{
-                    id
-                    status
-                  }
-                }
+      async fetchUsers() {
+    this.loading = true;
+    try {
+      const response = await this.$apollo.query({
+        query: gql`
+          query GetUsers {
+            users {
+              id
+              email
+              firstName
+              lastName
+              admin
+              createdAt
+              images
+              matches {
+                id
+                status
               }
-            `,
-          })
-          .then((response) => {
-            const users = response.data.users;
-            this.users = users
+            }
+          }
+        `,
+        fetchPolicy: 'network-only', // Ensures that the query is always refetched from the server
+      });
+      const users = response.data.users;
+      this.users = users
         .filter(user => !user.admin)
         .map(user => {
           const matchedCount = user.matches.filter(match => match.status === "matched").length;
           return { ...user, matchedCount };
         });
-          })
-          .catch((error) => {
-            console.error(error.message);
-          })
-          .finally(() => {
-            this.loading = false;
-          });
-      },
+    } catch (error) {
+      console.error(error.message);
+    } finally {
+      this.loading = false;
+    }
+  },
+  async refetchUsers() {
+    await this.fetchUsers(); // Use the fetchUsers method to refetch data
+  },
       navigateToUser(userId) {
       this.$router.push({ name: 'Show User', params: { id: userId } });
     },
@@ -262,12 +263,25 @@ import Paginator from 'primevue/paginator';
           this.sortOrder.order = 'asc';
         }
       },
+      isAdminPage() {
+      return this.$route.path.startsWith('/admin');
+    },
     },
 
 
-    mounted() {
-      this.fetchUsers();
-    },
+    async mounted() {
+    if (localStorage.getItem('token')) {
+      await this.fetchUsers();
+    }
+
+    this.$watch('$route', async () => {
+      if (this.isAdminPage() && localStorage.getItem('token')) {
+        await this.fetchUsers();
+      } else {
+        this.users = [];
+      }
+    });
+  },
     
     }
 </script>

@@ -333,16 +333,17 @@ import 'vue3-toastify/dist/index.css';
         toggleActions(userId) {
       this.activeActions = this.activeActions === userId ? null : userId;
     },
-    deleteUser(userId) {
-      if (confirm('Are you sure you want to delete this user?')) {
-        this.$apollo.mutate({
+    async deleteUser(userId) {
+  if (confirm('Are you sure you want to delete this user?')) {
+    try {
+      await this.$apollo.mutate({
         mutation: gql`
           mutation DeleteUser($id: ID!) {
             deleteUserMutation(input: { id: $id }) {
-                user {
-                    id
-                    email
-                    createdAt
+              user {
+                id
+                email
+                createdAt
               }
               errors
             }
@@ -352,18 +353,108 @@ import 'vue3-toastify/dist/index.css';
           id: userId,
         },
         update: (cache, { data: { deleteUserMutation } }) => {
-            const { users } = cache.readQuery({ query: gql`{ users { id email createdAt } }` });
-          const updatedUsers = users.filter(user => user.id !== userId);
-          cache.writeQuery({ query: gql`{ users { id email createdAt } }`, data: { users: updatedUsers } });
-        },
-      }).then(() => {
-        this.fetchUsers();
-        toast.success("Successfully deleted a user")
-      }).catch(error => {
-        console.error('Error deleting user:', error.message);
+          const { errors } = deleteUserMutation;
+
+          if (errors && errors.length > 0) {
+            throw new Error(errors.join(', '));
+          }
+
+          // Update users cache
+          const usersQuery = gql`
+            query GetUsers {
+              users {
+                id
+                email
+                firstName
+                lastName
+                admin
+                createdAt
+                images
+                matches {
+                  id
+                  status
+                }
+              }
+            }
+          `;
+
+          const existingData = cache.readQuery({ query: usersQuery });
+
+          if (existingData) {
+            const updatedUsers = existingData.users
+              .filter(u => u.id !== userId) // Remove deleted user
+              .map(u => {
+                // Recalculate matchedCount
+                const matchedCount = u.matches.filter(match => match.status === "matched").length;
+                return { ...u, matchedCount };
+              });
+
+            cache.writeQuery({
+              query: usersQuery,
+              data: {
+                users: updatedUsers
+              }
+            });
+          }
+
+          // Update matches cache
+          const matchesQuery = gql`
+            query GetMatches {
+              matches {
+                id
+                users {
+                  id
+                  firstName
+                  lastName
+                  images
+                  locationCountry
+                  locationRegion
+                  locationCity
+                  bio
+                }
+                status
+                updatedAt
+              }
+            }
+          `
+          ;
+          
+
+          const existingMatches = cache.readQuery({ query: matchesQuery });
+
+          if (existingMatches) {
+            const updatedMatches = existingMatches.matches.map(match => ({
+              ...match,
+              users: match.users.filter(u => u.id !== userId)
+            }));
+
+            cache.writeQuery({
+              query: matchesQuery,
+              data: {
+                matches: updatedMatches
+              }
+            });
+          }
+        }
       });
+
+      // Refetch queries manually
+      if (this.$apollo.queries.GetUsers) {
+        this.$apollo.queries.GetUsers.refetch();
       }
-    },
+
+      if (this.$apollo.queries.GetMatches) {
+        this.$apollo.queries.GetMatches.refetch();
+      }
+
+      this.fetchUsers();
+      toast.success("Successfully deleted the user");
+    } catch (error) {
+      console.error('Error deleting user:', error.message);
+      toast.error(`Failed to delete user: ${error.message}`);
+    }
+  }
+},
       fetchUsers() {
         this.loading = true;
         this.$apollo
@@ -378,9 +469,25 @@ import 'vue3-toastify/dist/index.css';
                   admin
                   createdAt
                   images
+                  matches {
+                  id
+                  users {
+                    id
+                    firstName
+                    lastName
+                    images
+                    locationCountry
+                    locationRegion
+                    locationCity
+                    bio
+                  }
+                  status
+                  updatedAt
+                }
                 }
               }
             `,
+            fetchPolicy: 'network-only',
           })
           .then((response) => {
             const users = response.data.users;

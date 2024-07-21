@@ -28,7 +28,9 @@ export default {
   },
   methods: {
     toggleSidebar() {
-      this.openSidebar = !this.openSidebar
+      this.openSidebar = !this.openSidebar;
+      // Dynamically set the CSS variable based on sidebar state
+      document.documentElement.style.setProperty('--sidebar-width', this.openSidebar ? '250px' : '80px');
     },
     async fetchCurrentUser() {
       try {
@@ -73,49 +75,44 @@ export default {
         query: { errorMessage: 'Unauthorized Access' }
       });
     }
-
-    // Fetch current user on every route change
-    this.$router.afterEach(() => {
-      if (localStorage.getItem('token') && this.isAdminPage()) {
-        this.fetchCurrentUser();
-      } else {
-        this.currentUser = null;
-      }
-    });
+    // Set initial CSS variable
+    document.documentElement.style.setProperty('--sidebar-width', this.openSidebar ? '250px' : '80px');
   }
 }
 </script>
 
 <style scoped>
-/* Fixed Sidebar */
+/* Sidebar */
 .sidebar {
   position: fixed;
   top: 0;
   left: 0;
   bottom: 0;
-  width: 250px; /* Adjust as needed */
+  width: var(--sidebar-width, 250px); /* Use CSS variable for dynamic width */
   background-color: transparent; /* Adjust as needed */
   z-index: 1000; /* Ensure it is above other content */
+  transition: width 0.3s; /* Smooth transition for sidebar width */
 }
 
 /* Main content container */
 .main-content {
-  margin-left: 250px; /* Adjust according to the width of the sidebar */
+  margin-left: var(--sidebar-width, 250px); /* Use CSS variable for dynamic margin */
   display: flex;
   flex-direction: column;
   height: auto;
-  
+  transition: margin-left 0.3s; /* Smooth transition for content margin */
 }
 
-/* Fixed Header */
+/* Header */
 .header {
   position: fixed;
   top: 0;
-  left: 250px; /* Adjust according to the width of the sidebar */
-  width: calc(100% - 280px); /* Full width minus sidebar width */
+  left: var(--sidebar-width, 250px); /* Use CSS variable for dynamic left position */
+  width: calc(100% - var(--sidebar-width, 250px) - 30px); /* Adjust for header margin */
   background-color: transparent; /* Adjust as needed */
   z-index: 1000; /* Ensure it is above other content */
   margin: 1rem;
+  transition: left 0.3s; /* Smooth transition for header position */
 }
 
 /* Content area */
