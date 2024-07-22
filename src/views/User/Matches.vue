@@ -4,7 +4,7 @@
     <div v-else>
       <div class="max-w-6xl mx-auto mt-8 mb-8 text-center" v-if="matches.length === 0">No matches found.</div>
       <div v-else>
-        <div v-for="match in paginatedMatches" :key="match.id" class="match-card">
+        <div v-for="match in paginatedMatches" :key="match.id" class="match-card" @click="openProfile(match)">
           <img :src="match.images[0]" alt="Primary Photo" class="match-photo" />
           <div class="match-info">
             <h3>{{ match.firstName }} {{ match.lastName }}</h3>
@@ -12,7 +12,7 @@
             <p class="updated-at">{{ timeAgo(match.updatedAt) }}</p>
           </div>
           <div class="actions">
-            <button @click="startConversation(match.id)" class="message-btn">
+            <button @click="startConversation(match.id, $event)" class="message-btn">
               <i class="pi pi-comment" style="font-size: 1em;"></i>
             </button>
           </div>
@@ -34,18 +34,87 @@
               }"
             />
           </div>
+          <Dialog v-model:visible="profileDialogVisible" header="User Profile" modal>
+      <div v-if="selectedUser">
+        <Galleria
+              :value="galleriaImages(selectedUser?.images || [])"
+              :numVisible="5"
+              :pt="ptOptions"
+              :showThumbnailNavigators="false"
+              :showItemNavigators="true"
+            >
+              <template #item="slotProps">
+                <img
+                  :src="slotProps.item.itemImageSrc"
+                  :alt="'Image'"
+                  style="width: 550px; height: 350px; object-fit: cover; display: block;"
+                />
+              </template>
+              <template #thumbnail="slotProps">
+                <img
+                  :src="slotProps.item.thumbnailImageSrc"
+                  :alt="'Thumbnail'"
+                  style="width: 50px; height: 50px; object-fit: cover; display: block;"
+                />
+              </template>
+            </Galleria>
+        <div class="info" style="text-align: center;">
+          <div class="user-info" style="justify-content: center;">
+            <strong :style="{ fontSize: '24px' }">
+              <i :class="genderIcon(selectedUser.gender) + ' gender-icon'"></i>
+              {{ selectedUser.firstName }} {{ selectedUser.lastName }}
+              <span :style="{ marginLeft: '0.05em', fontSize: '14px', color: '#555' }">({{ calculateAge(selectedUser.birthdate) }})</span>
+            </strong>
+          </div>
+          <p>{{ selectedUser.bio }}</p>
+          <p style="display: flex; align-items: center; font-size: small; margin-top: 1rem; font-weight: bold;">
+            <i class="pi pi-map-marker" style="font-size: 1.2em; margin-right: 0.5em;"></i>
+            {{ selectedUser.locationCity }}, {{ selectedUser.locationRegion }}, {{ selectedUser.locationCountry }}
+          </p>
+        </div>
+      </div>
+      <div class="rounded-lg p-3 bg-gray-200">
+          <strong class="block" :style="{ fontSize: '20px' }">Additional Details:</strong>
+          <div class="my-5">
+            <table class="min-w-full bg-white divide-y divide-gray-300">
+              <tbody class="bg-white divide-y divide-gray-200">
+                <tr>
+                  <td class="px-6 py-4 whitespace-nowrap font-medium text-gray-900">Birthdate:</td>
+                  <td class="px-6 py-4 whitespace-nowrap">{{ formatDate(selectedUser.birthdate) }}</td>
+                </tr>
+                <tr>
+                  <td class="px-6 py-4 whitespace-nowrap font-medium text-gray-900">Sexual Orientation:</td>
+                  <td class="px-6 py-4 whitespace-nowrap">{{ selectedUser.sexualOrientation }}</td>
+                </tr>
+                <tr>
+                  <td class="px-6 py-4 whitespace-nowrap font-medium text-gray-900">Gender Interest:</td>
+                  <td class="px-6 py-4 whitespace-nowrap">{{ selectedUser.genderInterest }}</td>
+                </tr>
+                <tr>
+                  <td class="px-6 py-4 whitespace-nowrap font-medium text-gray-900">School:</td>
+                  <td class="px-6 py-4 whitespace-nowrap">{{ selectedUser.school || 'N/A' }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+    </Dialog>
   </div>
 </template>
 
 <script>
 import gql from 'graphql-tag';
 import Paginator from 'primevue/paginator';
+import Dialog from 'primevue/dialog';
+import Galleria from 'primevue/galleria';
 
 
 export default {
   name: "ShowMatches",
   components:{
-    Paginator
+    Paginator,
+    Dialog,
+    Galleria
   },
   data() {
     return {
@@ -54,6 +123,10 @@ export default {
       matches: [],
       first: 0,
       perPage: 5,
+      profileDialogVisible: false,
+      selectedUser: null,
+      defaultImage: '/default-user.png', // Path to your default image
+      numberOfImages: 5,
     };
   },
   computed:{
@@ -67,6 +140,27 @@ export default {
       },
   },
   methods: {
+    galleriaImages(userImages = []) {
+    console.log('galleriaImages called with:', userImages);
+    const images = userImages;
+    const filledImages = [...images];
+    while (filledImages.length < this.numberOfImages) {
+      filledImages.push(this.defaultImage);
+    }
+    return filledImages.map(url => ({ itemImageSrc: url, thumbnailImageSrc: url }));
+  },
+    formatDate(dateString) {
+      if (!dateString) return '';
+      const date = new Date(dateString);
+      return new Intl.DateTimeFormat('en-US', { dateStyle: 'long' }).format(date);
+    },
+     openProfile(user) {
+      this.selectedUser = user;
+      this.profileDialogVisible = true;
+    },
+    closeProfile() {
+      this.profileDialogVisible = false;
+    },
     timeAgo(updatedAt) {
   console.log("Date:", updatedAt);
   const now = new Date();
@@ -99,11 +193,21 @@ export default {
                     id
                     firstName
                     lastName
-                    images
+                    mobileNumber
                     locationCountry
                     locationRegion
                     locationCity
+                    images
                     bio
+                    email
+                    createdAt
+                    updatedAt
+                    school
+                    birthdate
+                    gender
+                    sexualOrientation
+                    genderInterest
+                    admin
                   }
                   status
                   updatedAt
@@ -135,7 +239,8 @@ export default {
         this.loading = false;
       }
     },
-    async startConversation(receiverId) {
+    async startConversation(receiverId, event) {
+      event.stopPropagation(); 
       try {
         const existingConversationId = await this.checkExistingConversation(receiverId);
         if (existingConversationId) {
@@ -296,7 +401,22 @@ handlePageChange(event) {
         },
         isAdminPage() {
       return this.$route.path.startsWith('/admin');
+    }, genderIcon(gender) {
+      return gender === 'Male' ? 'pi pi-mars' : 'pi pi-venus';
     },
+    calculateAge(birthdate) {
+    const today = new Date();
+    const birthDate = new Date(birthdate);
+    let age = today.getFullYear() - birthDate.getFullYear();
+    const monthDifference = today.getMonth() - birthDate.getMonth();
+    
+    // If the current month is before the birth month or if it's the birth month but the current day is before the birth day
+    if (monthDifference < 0 || (monthDifference === 0 && today.getDate() < birthDate.getDate())) {
+      age--;
+    }
+    
+    return age;
+  },
 
   },
   async mounted() {
@@ -331,7 +451,14 @@ handlePageChange(event) {
   border-radius: 8px;
   background-color: #f9f9f9;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: background-color 0.3s; /* Smooth transition for hover effect */
+  cursor: pointer;
 }
+
+.match-card:hover {
+  background-color: #637575;
+}
+
 
 .match-photo {
   width: 80px;
@@ -369,7 +496,7 @@ handlePageChange(event) {
   border: none;
   cursor: pointer;
   color: grey;
-  font-size: 1.5em;
+  font-size: 2em;
 }
 
 .message-btn :hover {
@@ -378,6 +505,35 @@ handlePageChange(event) {
 
 .message-btn i {
   margin-right: 8px;
+}
+
+.info {
+  text-align: center;
+  padding: 16px;
+  font-family: Arial, sans-serif; /* Changed font for better readability */
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px; /* Space between name and icon */
+}
+
+.pi {
+  font-size: 24px; /* Adjust size as needed */
+}
+
+.gender-icon {
+  font-size: 18px; /* Adjust size as needed */
+}
+
+.gender-icon.pi-mars {
+  color: #007bff; /* Blue for male */
+}
+
+.gender-icon.pi-venus {
+  color: #e83e8c; /* Pink for female */
 }
 </style>
 
