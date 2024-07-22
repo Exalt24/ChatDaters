@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="container">
     <div v-if="users.length === 0" class="max-w-6xl mx-auto mt-8 mb-8 text-center">
       <p>No more users left for this session.</p>
     </div>
@@ -20,7 +20,7 @@
                 <span :style="{ marginLeft: '0.05em', fontSize: '14px', color: '#555' }">({{ calculateAge(user.birthdate) }})</span>
               </strong>
             </div>
-            <p>{{ user.bio }}</p>
+            <p class="bio">{{ user.bio }}</p>
             <p style="display: flex; align-items: center; font-size: small; margin-top: 1rem; font-weight: bold;">
               <i class="pi pi-map-marker" style="font-size: 1.2em; margin-right: 0.5em;"></i>
               {{ user.locationCity }}, {{ user.locationRegion }}, {{ user.locationCountry }}
@@ -105,6 +105,8 @@
     </Dialog>
   </div>
 </template>
+
+
 
 
 <script>
@@ -498,70 +500,79 @@ cardStyle(index) {
 </script>
 
 <style scoped>
+.container {
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  width: 100%;
+}
+
 .swipe-container {
   position: relative;
   width: 100%;
-  max-width: 460px; /* Adjusted max width */
-  margin: auto;
+  max-width: 400px; /* Adjust as needed */
   height: 500px;
+  margin: 0 auto;
 }
 
 .card {
   position: absolute;
   width: 100%;
-  background: white;
-  border: 1px solid #ddd;
-  border-radius: 12px;
+  max-width: 500px; /* Ensure this fits the container */
+  height: 500px;
+  border-radius: 16px;
+  overflow: hidden;
+  background-color: white;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-  transition: transform 0s;
+  transition: transform 0.3s ease-in-out;
+  margin: 0 auto; /* Center card horizontally */
 }
 
 .card img {
   width: 100%;
-  height: 400px; /* Fixed height for images */
-  object-fit: cover; /* Ensures the image covers the container without distortion */
+  height: 70%;
+  object-fit: cover;
 }
 
 .info {
-  text-align: center;
-  padding: 16px;
-  font-family: Arial, sans-serif; /* Changed font for better readability */
+  padding: 1.5rem;
+  text-align: center; /* Center all text inside .info */
 }
 
 .info-icon-btn {
   position: absolute;
-  top: 10px; /* Adjust as needed */
-  right: 10px; /* Adjust as needed */
+  top: 10px;
+  right: 10px;
   background: none;
   border: none;
   cursor: pointer;
   font-size: 1.5em;
-  color: #fff; /* Adjust color as needed */
+  color: gainsboro;
 }
 
 .info-icon-btn:hover {
-  color: gray; /* Darker color on hover */
+  color: gray;
 }
 
 .btns {
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 20px; /* Increased space between buttons */
-  margin-top: 70px;
+  gap: 20px;
+  margin-top: 20px; /* Adjusted margin-top for better spacing */
 }
 
 .btns img {
-  width: 60px; /* Increased button size for better visibility */
+  width: 60px;
   height: 60px;
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2); /* Enhanced shadow for better depth */
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
   border-radius: 50%;
   cursor: pointer;
-  transition: transform 0.2s; /* Smooth transition for button hover effect */
+  transition: transform 0.2s;
 }
 
 .btns img:hover {
-  transform: scale(1.1); /* Slightly enlarge button on hover */
+  transform: scale(1.1);
 }
 
 .card-enter-active, .card-leave-active {
@@ -574,24 +585,47 @@ cardStyle(index) {
 
 .user-info {
   display: flex;
-  align-items: center;
+  flex-direction: column; /* Stack items vertically */
+  align-items: center; /* Center items horizontally */
   justify-content: center;
-  gap: 8px; /* Space between name and icon */
+}
+
+.user-name {
+  font-size: 1.5rem; /* Adjusted size */
+}
+
+.user-age {
+  font-size: 1rem;
+  color: #555;
+}
+
+.user-bio,
+.user-location {
+  font-size: 1rem; /* Adjusted size for consistency */
 }
 
 .pi {
-  font-size: 24px; /* Adjust size as needed */
+  font-size: 24px;
 }
 
 .gender-icon {
-  font-size: 18px; /* Adjust size as needed */
+  margin-right: 0.5em; /* Adjusted margin */
+  font-size: 1.5rem; /* Adjusted size */
 }
 
 .gender-icon.pi-mars {
-  color: #007bff; /* Blue for male */
+  color: #007bff;
 }
 
 .gender-icon.pi-venus {
-  color: #e83e8c; /* Pink for female */
+  color: #e83e8c;
+}
+
+.bio {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 1; /* Limit to 3 lines */
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 </style>
