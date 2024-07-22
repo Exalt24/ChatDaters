@@ -70,7 +70,7 @@
               <span :style="{ marginLeft: '0.05em', fontSize: '14px', color: '#555' }">({{ calculateAge(selectedUser.birthdate) }})</span>
             </strong>
           </div>
-          <p>{{ selectedUser.bio }}</p>
+          <p class="step-bio">{{ selectedUser.bio }}</p>
           <p style="display: flex; align-items: center; font-size: small; margin-top: 1rem; font-weight: bold;">
             <i class="pi pi-map-marker" style="font-size: 1.2em; margin-right: 0.5em;"></i>
             {{ selectedUser.locationCity }}, {{ selectedUser.locationRegion }}, {{ selectedUser.locationCountry }}
@@ -628,5 +628,14 @@ cardStyle(index) {
   -webkit-line-clamp: 1; /* Limit to 1 line */
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+
+.step-bio {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 500px;
 }
 </style>
