@@ -501,14 +501,15 @@ cardStyle(index) {
 
 <style scoped>
 .container {
+  @apply max-w-6xl mx-auto mt-8 text-center;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  height: 100vh;
+  height: 85vh;
   width: 100%;
 }
 
 .swipe-container {
-  position: relative;
   width: 100%;
   max-width: 400px; /* Adjust as needed */
   height: 500px;
@@ -518,7 +519,7 @@ cardStyle(index) {
 .card {
   position: absolute;
   width: 100%;
-  max-width: 500px; /* Ensure this fits the container */
+  max-width: 400px; /* Ensure this fits the container */
   height: 500px;
   border-radius: 16px;
   overflow: hidden;
@@ -624,7 +625,7 @@ cardStyle(index) {
 .bio {
   display: -webkit-box;
   -webkit-box-orient: vertical;
-  -webkit-line-clamp: 1; /* Limit to 3 lines */
+  -webkit-line-clamp: 1; /* Limit to 1 line */
   overflow: hidden;
   text-overflow: ellipsis;
 }
