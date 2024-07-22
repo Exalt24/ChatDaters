@@ -127,6 +127,29 @@ export default {
       selectedUser: null,
       defaultImage: '/default-user.png', // Path to your default image
       numberOfImages: 5,
+      ptOptions: {
+            thumbnailContainer:{
+            style:{
+              backgroundColor: '#D1D5DB'
+            }
+          },
+          thumbnailItem:{
+            style: {
+              padding: '5px'
+            }
+          },
+            nextThumbnailButton:{
+              style: {
+              color: '#111827'
+            }
+  
+            },
+            previousThumbnailButton:{
+              style: {
+              color: '#111827'
+            }
+            },
+        }
     };
   },
   computed:{
@@ -456,7 +479,7 @@ handlePageChange(event) {
 }
 
 .match-card:hover {
-  background-color: #637575;
+  background-color: #bdc1c1;
 }
 
 

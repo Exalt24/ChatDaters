@@ -208,6 +208,11 @@ header a:hover {
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
+.nav-link:hover {
+  background-color: gray; /* Change to your preferred hover background color */
+  color: white; /* Change to your preferred hover text color */
+}
+
 .nav-link.active {
   background-color: #4b5563; /* Highlight background color */
   color: white; /* Highlight text color */

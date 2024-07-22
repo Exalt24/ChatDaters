@@ -204,7 +204,7 @@ export default {
 }
 
 .conversations-card:hover {
-  background-color: #637575;
+  background-color: #bdc1c1;
 }
 
 .conversations-photo {

@@ -1,6 +1,9 @@
 <template>
   <div class="container">
-    <div v-if="users.length === 0" class="max-w-6xl mx-auto mt-8 mb-8 text-center">
+    <div v-if="loading" class="max-w-6xl mx-auto mt-8 mb-8 text-center">
+      <p>Loading...</p>
+    </div>
+    <div v-if="!loading && users.length === 0" class="max-w-6xl mx-auto mt-8 mb-8 text-center">
       <p>No more users left for this session.</p>
     </div>
     <div v-else>
