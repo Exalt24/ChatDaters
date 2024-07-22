@@ -36,7 +36,7 @@
     <!-- Featured Profiles Section -->
     <section class="py-20">
       <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-        <h2 class="text-3xl font-extrabold text-gray-900">Featured Profiles</h2>
+        <h2 class="text-3xl font-extrabold text-gray-900">Featured Users</h2>
         <div class="mt-12 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
           <!-- Dynamic Profile Cards -->
           <div v-for="(profile, index) in featuredProfiles" :key="index" class="bg-white shadow-xl rounded-lg overflow-hidden">
