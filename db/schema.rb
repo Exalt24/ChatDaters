@@ -85,6 +85,9 @@ ActiveRecord::Schema[7.2].define(version: 2024_07_21_105051) do
     t.string "last_name"
     t.string "mobile_number"
     t.boolean "admin", default: false
+    t.string "activation_token"
+    t.boolean "activated", default: false
+    t.datetime "activated_at"
     t.string "password_digest"
     t.date "birthdate"
     t.string "gender"

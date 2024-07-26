@@ -344,6 +344,7 @@ DEPENDENCIES
   importmap-rails
   jbuilder
   jwt
+  mail
   mini_magick
   open-uri
   pg (~> 1.1)
