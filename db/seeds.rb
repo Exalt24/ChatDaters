@@ -32,6 +32,7 @@ def create_user(email, admin, gender, gender_interest, image_urls)
     location_city: Faker::Address.city,
     school: Faker::University.name,
     bio: Faker::Lorem.sentence,
+    activated: true,
     images: image_urls.map { |url| fetch_image_from_url(url) }
   }
 

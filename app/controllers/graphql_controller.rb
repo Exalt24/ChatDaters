@@ -100,7 +100,7 @@ class GraphqlController < ApplicationController
   end
 
   def public_query_or_mutation?
-    public_operations = [ "CheckEmailExistence", "LoginUser", "CreateUser", "GetUsers", "LogoutUserMutation" ]
+    public_operations = [ "CheckEmailExistence", "LoginUserMutation", "CreateUser", "GetUsers", "LogoutUserMutation", "ActivateAccount", "SendActivationEmail", "LoginUser" ]
     public_operations.include?(params[:operationName])
   end
 end

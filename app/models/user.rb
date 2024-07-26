@@ -1,7 +1,7 @@
 class User < ApplicationRecord
+  before_create :generate_activation_token
   has_many_attached :images
   has_secure_password
-
   has_many :matches, ->(user) {
     unscope(where: :user_id)
     .where("user_ids @> ARRAY[?]::integer[]", [ user.id ])
@@ -38,5 +38,9 @@ class User < ApplicationRecord
     else
       errors.add(:images, "must have at least one image")
     end
+  end
+
+  def generate_activation_token
+    self.activation_token = SecureRandom.urlsafe_base64
   end
 end

@@ -1,0 +1,7 @@
+Hi <%= @user.first_name %> <% @user.last_name%>,
+Welcome to ChatHotel! Click on the link below to activate your account:
+<% if Rails.env.development? %>
+  <%= link_to 'Activate your account', "http://127.0.0.1:5173/activate/#{@user.activation_token}?email=#{CGI.escape(@user.email)}" %>
+<% else %>
+  <%= link_to 'Activate your account', "https://chat-daters-front-end.vercel.app/activate/#{@user.activation_token}?email=#{CGI.escape(@user.email)}" %>
+<% end %>

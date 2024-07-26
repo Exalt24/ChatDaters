@@ -21,6 +21,7 @@ module Types
     field :bio, String, null: true, description: "The bio of the user"
     field :images, [ String ], null: true, description: "The URLs of the images attached to the user"
     field :admin, Boolean, null: true, description: "The presence of the administrative privilege of a user"
+    field :activated, Boolean, null: true, description: "The activation status of the user's account"
     field :created_at, GraphQL::Types::ISO8601DateTime, null: false, description: "The date and time when the user was created"
     field :updated_at, GraphQL::Types::ISO8601DateTime, null: false, description: "The date and time when the user was last updated"
     field :matches, [ MatchType ], null: true, description: "The matches of the user"
@@ -28,6 +29,10 @@ module Types
 
     def matches
       object.matches
+    end
+
+    def activated
+      object.activated
     end
 
     def conversations
