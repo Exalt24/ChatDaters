@@ -8,7 +8,8 @@ const getCsrfToken = () => {
 };
 
 const uploadLink = createUploadLink({
-  uri: 'https://chatdaters.onrender.com/graphql',
+  uri: 'https://chatdaters.onrender.com/graphql'
+  // uri: 'http://localhost:3000/graphql'
 });
 
 const authLink = setContext((_, { headers }) => {

@@ -288,38 +288,29 @@ export default {
         });
     },
     async login() {
-      // Clear previous errors
       this.errors = [];
-
       // GraphQL mutation to login user
       this.$apollo
         .mutate({
           mutation: gql`
-            mutation LoginUser($email: String!, $password: String!) {
-              loginUserMutation(input: {email: $email, password: $password}) {
-                token
-                user {
-                  id
-                  email
-                }
+            mutation SendActivationEmail($email: String!) {
+              sendActivationEmail(input: { email: $email }) {
+                success
                 errors
               }
             }
           `,
           variables: {
             email: this.email,
-            password: this.password,
           },
         })
         .then(({ data }) => {
-          if (data.loginUserMutation.errors.length) {
-            this.errors = data.loginUserMutation.errors;
+          if (data.sendActivationEmail.errors.length) {
+            this.errors = data.sendActivationEmail.errors;
           } else {
-            localStorage.setItem('token', data.loginUserMutation.token);
-            console.log("GOT THE TOKEN: ", data.loginUserMutation.token)
             this.$router.push({ 
                 name: 'Home', 
-                query: { successMessage: 'Successfully logged in' }
+                query: { successMessage: 'Successfully sent an activation email. Please check your inbox' }
             });
           }
         })
@@ -672,6 +663,21 @@ async fetchCountriesAndStates() {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 10px;
+}
+
+.error-message {
+  margin-top: 10px;
+}
+
+.error-message ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+.error-message li {
+  color: #ff0000;
+  font-size: 14px;
+  margin-bottom: 5px;
 }
 
 @media (max-width: 600px) {

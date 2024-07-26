@@ -17,6 +17,7 @@ import Swipe from '@/views/User/Swipe.vue';
 import ProfileEdit from '@/views/User/ProfileEdit.vue';
 import ConversationList from '@/views/User/ConversationList.vue';
 import Conversation from '@/views/User/Conversation.vue';
+import Activate from '@/views/User/Activate.vue';
 
 const routes = [
   {
@@ -32,6 +33,7 @@ const routes = [
       { path: ':id/conversations', name: 'ConversationList', component: ConversationList, meta: { requiresAuth: true } },
       { path: ':id/conversations/:conversationId', name: 'Conversation', component: Conversation, meta: { requiresAuth: true } },
       { path: ':id/matches', name: 'ShowMatches', component: Matches, meta: { requiresAuth: true } },
+      { path: '/activate/:token', name: 'Activate', component: Activate, props: route => ({ token: route.params.token, email: route.query.email }) }
     ]
   },
   {

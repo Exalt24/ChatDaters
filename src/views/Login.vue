@@ -75,6 +75,11 @@ export default {
         successMessage.value = initialSuccessMessage; // Update reactive variable
         showSuccessToast(successMessage.value);
       }
+
+      const initialErrorMessage = route.query.errorMessage;
+    if (initialErrorMessage) {
+      showErrorToast(initialErrorMessage);
+    }
     });
 
     const showSuccessToast = (message) => {
@@ -82,7 +87,14 @@ export default {
       setTimeout(() => {
         router.replace({ ...route, query: {} }); // Delayed route replacement
       }, 2000); // Replace after 2 seconds (adjust delay as needed)
-    };  
+    };
+
+    const showErrorToast = (message) => {
+      toast.error(message); // Show error toast
+      setTimeout(() => {
+        this.$router.replace({ ...this.$route, query: {} }); // Delayed route replacement
+      }, 2000); // Replace after 2 seconds (adjust delay as needed)
+    };
 
     return {
     };
@@ -102,12 +114,14 @@ export default {
       try {
     const { data } = await this.$apollo.mutate({
       mutation: gql`
-        mutation LoginUser($email: String!, $password: String!) {
+        mutation LoginUserMutation($email: String!, $password: String!) {
           loginUserMutation(input: {email: $email, password: $password}) {
             token
             user {
               id
               email
+              admin
+              activated
             }
             errors
           }
@@ -123,6 +137,17 @@ export default {
       this.errors = data.loginUserMutation.errors;
       console.log(this.errors);
     } else {
+      console.log("TEST")
+      console.log(data.loginUserMutation.user.activated)
+
+      if (data.loginUserMutation.user.activated === false) {
+        this.$router.push({ 
+          name: 'Home', 
+          query: { errorMessage: 'User has not been verified yet. Please check your inbox!' }
+        });
+        return
+      }
+
       const token = data.loginUserMutation.token;
       const userId = data.loginUserMutation.user.id;
       localStorage.setItem('token', token);

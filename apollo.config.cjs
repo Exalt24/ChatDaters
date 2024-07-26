@@ -1,8 +1,9 @@
 module.exports = {
   client: {
     service: {
-      name: 'vueapp',  // Replace with your service name
-      url: 'https://chatdaters.onrender.com/graphql',  // URL to your GraphQL API
+      name: 'vueapp',
+      url: 'https://chatdaters.onrender.com/graphql'
+      // url: 'http://localhost:3000/graphql'
     },
     includes: [
       'src/**/*.vue',
