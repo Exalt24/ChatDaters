@@ -194,7 +194,7 @@ GEM
     parser (3.3.4.0)
       ast (~> 2.4.1)
       racc
-    pg (1.5.6)
+    pg (1.5.7)
     psych (5.1.2)
       stringio
     puma (6.4.2)
@@ -347,7 +347,7 @@ DEPENDENCIES
   mail
   mini_magick
   open-uri
-  pg (~> 1.1)
+  pg (~> 1.5)
   puma (>= 5.0)
   rack-cors
   rails (~> 7.2.0.beta2)
