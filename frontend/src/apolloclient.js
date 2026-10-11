@@ -8,8 +8,7 @@ const getCsrfToken = () => {
 };
 
 const uploadLink = createUploadLink({
-  uri: 'https://chatdaters.onrender.com/graphql'
-  // uri: 'http://localhost:3000/graphql'
+  uri: import.meta.env.VITE_GRAPHQL_URL || 'http://localhost:3000/graphql'
 });
 
 const authLink = setContext((_, { headers }) => {
@@ -21,7 +20,6 @@ const authLink = setContext((_, { headers }) => {
 
   // Check if authToken is defined and not empty before including in headers
   if (authToken) {
-    console.log("JWT TOKEN:", authToken)
     headers = {
       ...headers,
       Authorization: `Bearer ${authToken}`,

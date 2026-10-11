@@ -1,0 +1,36 @@
+# Local stack for the Rails API and its Postgres database. The Vue app runs on the host (see README).
+# The host port can be changed with API_PORT, for example: API_PORT=4757 docker compose up --build
+services:
+  db:
+    image: postgres:17-alpine
+    environment:
+      # Local only: the database is not published to the host, so it needs no password.
+      POSTGRES_HOST_AUTH_METHOD: trust
+    volumes:
+      - dbdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 2s
+      retries: 30
+
+  api:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.dev
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      RAILS_ENV: development
+      DATABASE_URL: postgres://postgres@db:5432/graph_ql_development
+      # Used to build the image URLs the API returns, so it must match the published port below.
+      APP_HOST: localhost
+      APP_PORT: ${API_PORT:-3000}
+    ports:
+      - "${API_PORT:-3000}:3000"
+    volumes:
+      - storage:/rails/storage
+
+volumes:
+  dbdata:
+  storage:

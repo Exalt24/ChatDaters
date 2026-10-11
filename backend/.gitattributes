@@ -1,5 +1,8 @@
 # See https://git-scm.com/docs/gitattributes for more about git attribute files.
 
+# Keep the executable scripts on LF so they run inside the Linux container from a Windows checkout.
+bin/* text eol=lf
+
 # Mark the database schema as having been generated.
 db/schema.rb linguist-generated
 
