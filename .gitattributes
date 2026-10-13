@@ -1,3 +1,17 @@
 # Shell scripts must be LF on every machine: core.autocrlf=true checks them out as CRLF and bash cannot run them (2026-10-13).
 *.sh text eol=lf
 *.bash text eol=lf
+# Line endings and binaries, enforced on every machine (autocrlf corrupted PDFs and left shell scripts and Dockerfiles CRLF, 2026-10-13).
+Dockerfile* text eol=lf
+*.gif binary
+*.ico binary
+*.png binary
+/backend/Dockerfile text eol=lf
+/backend/bin/brakeman text eol=lf
+/backend/bin/bundle text eol=lf
+/backend/bin/docker-entrypoint text eol=lf
+/backend/bin/importmap text eol=lf
+/backend/bin/rails text eol=lf
+/backend/bin/rake text eol=lf
+/backend/bin/rubocop text eol=lf
+/backend/bin/setup text eol=lf
