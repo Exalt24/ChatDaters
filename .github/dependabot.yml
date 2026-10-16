@@ -1,0 +1,18 @@
+version: 2
+updates:
+  - package-ecosystem: bundler
+    directory: "/backend"
+    schedule:
+      interval: weekly
+    groups:
+      weekly-bundler:
+        patterns:
+          - "*"
+  - package-ecosystem: npm
+    directory: "/frontend"
+    schedule:
+      interval: weekly
+    groups:
+      weekly-npm:
+        patterns:
+          - "*"
