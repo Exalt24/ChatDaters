@@ -1,5 +1,7 @@
 # ChatDaters
 
+[![CI](https://github.com/Exalt24/ChatDaters/actions/workflows/ci.yml/badge.svg)](https://github.com/Exalt24/ChatDaters/actions/workflows/ci.yml)
+
 A swipe, match and message app: a Rails GraphQL API and a Vue 3 frontend, built solo in a three day internship sprint.
 
 ![ChatDaters running locally: log in, swipe, match, and message](docs/demo.gif)
@@ -48,7 +50,7 @@ Sign-up works, but its activation email goes out through Gmail SMTP with credent
 
 ## Tests
 
-There is no test suite. The CI workflow in `backend/.github/workflows/ci.yml` runs Brakeman, an importmap audit and RuboCop. On 2026-10-17 I ran the API half of Run it in a fresh clone (the stack, the seed, login for three accounts, the pending then matched sequence, and a stored message) and `npm install` plus `npm run build` for the frontend (it builds). I did not click through the Vue screens again in that pass; the demo GIF above is the recording of them.
+There is no test suite. The CI workflow in `.github/workflows/ci.yml` runs RuboCop, Brakeman, a schema load into Postgres and a Zeitwerk eager load for the API, and `npm ci` plus the Vite build for the frontend. On 2026-10-17 I ran the API half of Run it in a fresh clone (the stack, the seed, login for three accounts, the pending then matched sequence, and a stored message) and `npm install` plus `npm run build` for the frontend (it builds). I did not click through the Vue screens again in that pass; the demo GIF above is the recording of them.
 
 ## Limits and not done
 
