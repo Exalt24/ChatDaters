@@ -10,7 +10,7 @@
   "dependencies": {
     "@apollo/client": "^3.10.8",
     "@heroicons/vue": "^2.1.5",
-    "@mdi/font": "5.9.55",
+    "@mdi/font": "7.4.47",
     "@primevue/themes": "^4.0.0",
     "@vee-validate/rules": "^4.13.2",
     "@vue/apollo-option": "^4.0.0",
