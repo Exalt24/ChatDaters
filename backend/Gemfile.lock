@@ -126,12 +126,6 @@ GEM
     erubi (1.13.1)
     faker (3.8.0)
       i18n (>= 1.8.11, < 2)
-    ffi (1.17.0-aarch64-linux-gnu)
-    ffi (1.17.0-arm-linux-gnu)
-    ffi (1.17.0-arm64-darwin)
-    ffi (1.17.0-x86-linux-gnu)
-    ffi (1.17.0-x86_64-darwin)
-    ffi (1.17.0-x86_64-linux-gnu)
     fiber-storage (1.0.1)
     globalid (1.4.0)
       activesupport (>= 6.1)
@@ -143,9 +137,7 @@ GEM
       logger
     i18n (1.15.2)
       concurrent-ruby (~> 1.0)
-    image_processing (1.14.0)
-      mini_magick (>= 4.9.5, < 6)
-      ruby-vips (>= 2.0.17, < 3)
+    image_processing (2.2.0)
     importmap-rails (2.2.3)
       actionpack (>= 6.0.0)
       activesupport (>= 6.0.0)
@@ -316,9 +308,6 @@ GEM
       rubocop-performance (>= 1.24)
       rubocop-rails (>= 2.30)
     ruby-progressbar (1.13.0)
-    ruby-vips (2.2.2)
-      ffi (~> 1.12)
-      logger
     securerandom (0.4.1)
     sprockets (4.2.1)
       concurrent-ruby (~> 1.0)
@@ -376,7 +365,7 @@ DEPENDENCIES
   faker
   graphiql-rails
   graphql
-  image_processing (~> 1.2)
+  image_processing (~> 2.2)
   importmap-rails
   jbuilder
   jwt (~> 3.3)
