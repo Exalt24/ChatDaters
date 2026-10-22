@@ -8,7 +8,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@apollo/client": "^3.10.8",
+    "@apollo/client": "^4.3.3",
     "@heroicons/vue": "^2.1.5",
     "@mdi/font": "7.4.47",
     "@primevue/themes": "^4.0.0",
