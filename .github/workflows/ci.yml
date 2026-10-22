@@ -14,6 +14,7 @@ concurrency:
 
 jobs:
   backend:
+    timeout-minutes: 30
     name: Rails API
     runs-on: ubuntu-latest
     defaults:
@@ -32,8 +33,8 @@ jobs:
       RAILS_ENV: development
       DATABASE_URL: postgres://postgres:postgres@localhost:5432/graph_ql_development
     steps:
-      - uses: actions/checkout@v4
-      - uses: ruby/setup-ruby@v1
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: ruby/setup-ruby@b1da4809b005e0178fe08a1d57317bffc00b7b4c # v1
         with:
           working-directory: backend
           bundler-cache: true
@@ -49,14 +50,15 @@ jobs:
         run: bin/rails zeitwerk:check
 
   frontend:
+    timeout-minutes: 30
     name: Vue app
     runs-on: ubuntu-latest
     defaults:
       run:
         working-directory: frontend
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version: 22
           cache: npm

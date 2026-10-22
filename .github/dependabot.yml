@@ -4,15 +4,31 @@ updates:
     directory: "/backend"
     schedule:
       interval: weekly
+    cooldown:
+      default-days: 7
     groups:
       weekly-bundler:
+        update-types: [minor, patch]
         patterns:
           - "*"
   - package-ecosystem: npm
     directory: "/frontend"
     schedule:
       interval: weekly
+    cooldown:
+      default-days: 7
     groups:
       weekly-npm:
+        update-types: [minor, patch]
         patterns:
           - "*"
+  - package-ecosystem: github-actions
+    directory: "/"
+    schedule:
+      interval: weekly
+    cooldown:
+      default-days: 7
+    groups:
+      actions:
+        patterns: ["*"]
+        update-types: [minor, patch]
