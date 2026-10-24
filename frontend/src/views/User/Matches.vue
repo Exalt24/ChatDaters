@@ -403,7 +403,7 @@ async createFirstMessage(receiverId) {
               query: conversationsQuery,
               data: {
                 currentUser: {
-                  id: data.currentUser.id,
+                  id: this.currentUser.id,
                   conversations: [conversation]
                 }
               }
