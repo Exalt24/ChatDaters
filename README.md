@@ -48,15 +48,27 @@ Every seeded user has the password `password`. `user1@gmail.com` is a woman inte
 
 Sign-up works, but its activation email goes out through Gmail SMTP with credentials that are not in the repository, so locally it ends in an error at the email step; use the seeded accounts. The JWT signing key comes from the Rails credentials when they can be decrypted and otherwise from Rails' own `secret_key_base`, so no master key is needed.
 
+## Automation lab
+
+![The automation lab swiping the deck by filters, then typing a templated first message to each new match, in Chrome on an Android emulator](docs/automation.gif)
+
+*Recorded from a live run on an Android emulator against this app with the seeded accounts.*
+
+`automation/` drives this app through Appium in Chrome on an Android emulator: it swipes the deck by filters from one config file, types a templated first message to each new match, paces itself, stops at daily caps and writes a report with the reply rate of each template. Every command is a read only dry run unless `--live` is given, and it refuses any host that is not on the config's allowed list. It is for this app and its seeded accounts only: Tinder, Hinge, Bumble and Instagram all ban automation in their own terms, with the quotes in [docs/AUTOMATION.md](docs/AUTOMATION.md). Setup, the config, the safety defaults and the limits are in the same file.
+
+What broke: the first live run failed on the first message of a new conversation with `Cannot access 'data' before initialization`, a bug in `frontend/src/views/User/Matches.vue` (the cache update read a value its own call was still producing). It is fixed, and the same run passes.
+
 ## Tests
 
-There is no test suite. The CI workflow in `.github/workflows/ci.yml` runs RuboCop, Brakeman, a schema load into Postgres and a Zeitwerk eager load for the API, and `npm ci` plus the Vite build for the frontend. On 2026-10-17 I ran the API half of Run it in a fresh clone (the stack, the seed, login for three accounts, the pending then matched sequence, and a stored message) and `npm install` plus `npm run build` for the frontend (it builds). I did not click through the Vue screens again in that pass; the demo GIF above is the recording of them.
+- **Automation unit tests:** `python -m unittest discover -s automation/tests -v` runs 33 tests on the filters, templates, schedule, caps and report. `python automation/tests/mutation_check.py` breaks the rules in 18 small ways and requires the tests to turn red each time; all 18 are caught. Both run in CI.
+- **End to end on the emulator:** `python automation/e2e_appium_chatdaters.py` resets the database, runs a dry run and two live runs in Chrome on the emulator and checks 12 results against the real records. It needs a device, so it does not run in CI. After the app fix it passed on seven of eight runs on 2026-10-25; the one failure was a race in the driver (it read a conversation before the thread had loaded), fixed, and the next two runs passed.
+- **The rest of the app has no test suite.** The CI workflow in `.github/workflows/ci.yml` runs RuboCop, Brakeman, a schema load into Postgres and a Zeitwerk eager load for the API, and `npm ci` plus the Vite build for the frontend. On 2026-10-17 I ran the API half of Run it in a fresh clone (the stack, the seed, login for three accounts, the pending then matched sequence, and a stored message) and `npm install` plus `npm run build` for the frontend (it builds).
 
 ## Limits and not done
 
 - **No authentication on the user list.** Whether a request needs a token is decided by the operation name the client sends. A request named `GetUsers` is treated as public, and an unauthenticated `users` query returned all 14 seeded users with email, mobile number and birthdate. Do not expose this API as it stands.
 - **The match mutation does not check who liked.** The same user liking twice flips a `pending` match to `matched`; the only guard is the deck filter, which runs in the browser against the full user list.
-- No live push for messages (see above), and no test suite.
+- No live push for messages (see above), and no tests for the app itself beyond the automation lab's end to end run.
 - Nothing is deployed. The old hosted copy is gone, and `backend/render.yaml` and the production settings are left over from that Render deploy and are not exercised locally.
 
 ## Stack

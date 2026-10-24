@@ -1,0 +1,31 @@
+{
+  "app": {
+    "base_url": "http://10.0.2.2:5173",
+    "allowed_hosts": ["10.0.2.2", "localhost", "127.0.0.1"]
+  },
+  "filters": {
+    "min_age": 25,
+    "max_age": 45,
+    "genders": ["Male"],
+    "min_bio_chars": 10,
+    "blocked_bio_words": ["crypto", "onlyfans"]
+  },
+  "templates": [
+    { "id": "short-hello", "text": "Hi {first_name}, your profile caught my eye. How is your week going?" },
+    { "id": "city-question", "text": "Hey {first_name}, what is the best thing about {city}?" },
+    { "id": "bio-opener", "text": "Hi {first_name}, I liked your bio. What got you onto this app?" }
+  ],
+  "pacing": {
+    "min_gap_s": 20,
+    "max_gap_s": 90,
+    "active_hours": { "start": "09:00", "end": "22:00" }
+  },
+  "caps": {
+    "likes_per_day": 8,
+    "messages_per_day": 5
+  },
+  "schedule": {
+    "run_at": ["10:30", "20:15"],
+    "jitter_minutes": 12
+  }
+}

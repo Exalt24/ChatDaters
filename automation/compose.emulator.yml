@@ -1,0 +1,6 @@
+# Overrides the API's public host so image URLs resolve inside the Android emulator, where the PC is 10.0.2.2 and not localhost.
+# Used with the main compose file: API_PORT=4757 docker compose -f docker-compose.yml -f automation/compose.emulator.yml up --build -d
+services:
+  api:
+    environment:
+      APP_HOST: 10.0.2.2

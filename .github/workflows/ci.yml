@@ -49,6 +49,17 @@ jobs:
       - name: Eager load every class
         run: bin/rails zeitwerk:check
 
+  automation:
+    timeout-minutes: 10
+    name: Automation lab (unit tests and mutation check)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Unit tests
+        run: python3 -m unittest discover -s automation/tests -v
+      - name: Every mutant must turn them red
+        run: python3 automation/tests/mutation_check.py
+
   frontend:
     timeout-minutes: 30
     name: Vue app
