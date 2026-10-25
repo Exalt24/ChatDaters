@@ -1,3 +1,4 @@
+# LIFESPAN: permanent
 """Proof that the tests can fail: break plan.py or report.py in one small way at a time, in a temporary copy, and require the unit tests to turn red.
 
 A mutant whose target text is gone fails the run loudly (the file was reworded and the check went stale), and a mutant the tests do not catch fails it too.

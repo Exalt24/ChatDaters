@@ -87,7 +87,7 @@ def watch_loop(sched, run, now, sleep, rng, max_runs=None, log=print):
 
 
 def cmd_watch(cfg, args):
-    status = watch_loop(cfg.get("schedule", {}), lambda: cmd_run(cfg, args, True), lambda: dt.datetime.now().astimezone(), time.sleep, random.Random())
+    status = watch_loop(cfg.get("schedule", {}), lambda: cmd_run(cfg, args, True), lambda: dt.datetime.now().astimezone(), time.sleep, random.Random(), max_runs=args.max_runs)
     return 1 if status < 0 else 0
 
 
@@ -97,6 +97,7 @@ def main(argv):
     ap.add_argument("--config", default=DEFAULT_CONFIG)
     ap.add_argument("--live", action="store_true", help="change things in the app (without it every command is read-only)")
     ap.add_argument("--appium-url", default="", help="use a server that is already running instead of starting one")
+    ap.add_argument("--max-runs", type=int, default=None, help="watch only: stop after this many runs (default: keep going until stopped)")
     args = ap.parse_args(argv)
     if args.command in ("run", "watch") and not args.live:
         print("run and watch change things: add --live, or use `plan` for a read-only look")
