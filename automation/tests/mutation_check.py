@@ -30,13 +30,20 @@ MUTANTS = [
     ("plan.py", "any host that mentions an allowed name passes", "m.group(1).lower() in {h.lower() for h in allowed_hosts}", "any(h.lower() in str(url).lower() for h in allowed_hosts)"),
     ("plan.py", "a minor can be configured", "lo < 18", "lo < 0"),
     ("plan.py", "a template with an unknown field validates", "if field not in KNOWN_FIELDS:", "if False:"),
+    ("run.py", "the watch loop runs before its time", "while now() < when:", "while False:"),
+    ("run.py", "one failed run ends the schedule", "except Exception as exc:  # noqa: BLE001  one failed run", "except KeyboardInterrupt as exc:  # noqa: BLE001  one failed run"),
+    ("run.py", "an empty schedule loops forever", "return -1", "continue"),
     ("report.py", "one conversation counts as many answers", "if key not in answered and r.get(\"template_id\") in per_template:", "if r.get(\"template_id\") in per_template:"),
     ("report.py", "dry-run rows count as live likes", 'live = [r for r in rows if r.get("live")]', "live = list(rows)"),
 ]
 
 
 def run_tests(cwd):
-    return subprocess.run([sys.executable, "-m", "unittest", "discover", "-s", "tests"], cwd=cwd, capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=120).returncode
+    """The unit tests' exit code. A mutant that makes the code loop forever hangs the tests, and a hang is as red as a failure (the suite takes about 2 s, so 30 s is generous)."""
+    try:
+        return subprocess.run([sys.executable, "-m", "unittest", "discover", "-s", "tests"], cwd=cwd, capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=30).returncode
+    except subprocess.TimeoutExpired:
+        return 1
 
 
 def main():

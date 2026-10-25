@@ -66,21 +66,29 @@ def cmd_run(cfg, args, live):
     return 0
 
 
-def cmd_watch(cfg, args):
-    rng = random.Random()
-    sched = cfg.get("schedule", {})
-    while True:
-        when = plan.next_run(dt.datetime.now().astimezone(), sched.get("run_at", []), sched.get("jitter_minutes", 0), rng)
+def watch_loop(sched, run, now, sleep, rng, max_runs=None, log=print):
+    """Wait for each scheduled time (run_at with jitter), call run(), repeat. The clock, the sleep, the run and the random source are passed in so the loop is testable
+    without waiting; a failed run is logged and the schedule goes on. Returns the number of runs started, or -1 when the schedule is empty."""
+    started = 0
+    while max_runs is None or started < max_runs:
+        when = plan.next_run(now(), sched.get("run_at", []), sched.get("jitter_minutes", 0), rng)
         if when is None:
-            print("schedule.run_at is empty: nothing to wait for")
-            return 1
-        print("next run at %s" % when.isoformat(timespec="minutes"))
-        while dt.datetime.now().astimezone() < when:
-            time.sleep(1.0)
+            log("schedule.run_at is empty: nothing to wait for")
+            return -1
+        log("next run at %s" % when.isoformat(timespec="minutes"))
+        while now() < when:
+            sleep(1.0)
+        started += 1
         try:
-            cmd_run(cfg, args, True)
+            run()
         except Exception as exc:  # noqa: BLE001  one failed run must not end the schedule
-            print("run failed: %s" % exc)
+            log("run failed: %s" % exc)
+    return started
+
+
+def cmd_watch(cfg, args):
+    status = watch_loop(cfg.get("schedule", {}), lambda: cmd_run(cfg, args, True), lambda: dt.datetime.now().astimezone(), time.sleep, random.Random())
+    return 1 if status < 0 else 0
 
 
 def main(argv):
