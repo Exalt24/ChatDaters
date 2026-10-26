@@ -8,7 +8,7 @@ A swipe, match and message app: a Rails GraphQL API and a Vue 3 frontend, built 
 
 *Recorded from the real app running on a local stack (Rails API in Docker, Vue app on Vite).*
 
-**Proof:** a fresh clone gets a running API with 14 seeded users in 126 seconds (`docker compose up --build -d`, measured 2026-10-17), and through that API a first like creates a `pending` match, the second turns it `matched`, and a message is stored. There is no hosted copy, so this local run is the demo.
+**Proof:** a fresh clone gets a running API with 14 seeded users (`docker compose up --build -d` then the seed, about 126 seconds on one machine on 2026-10-17; I did not save the timing), and through that API a first like creates a `pending` match, the second turns it `matched`, and a message is stored. There is no hosted copy, so this local run is the demo.
 
 Built during my Full Stack Developer internship at ChatGenie.PH (Techstars '23, July 2024). It is one of two apps I shipped solo there, each in a compressed three day sprint; the other is [ChatHotel](https://github.com/Exalt24/ChatHotel).
 
@@ -34,10 +34,11 @@ This is a monorepo merged from the two original repositories with their git hist
 
 ## Run it
 
-You need Docker and Node 20.19 or newer. No Ruby install is needed. The seed downloads portraits from randomuser.me, so it needs internet access.
+You need Docker and Node 20.19 or newer (Vite's floor; CI builds on Node 22). No Ruby install is needed. The seed downloads portraits from randomuser.me, so it needs internet access.
 
 ```bash
 docker compose up --build -d
+# wait until `docker compose logs api` shows `Listening on`, then seed
 docker compose exec api bin/rails db:seed
 cd frontend && npm install && npm run dev
 ```
@@ -54,14 +55,14 @@ Sign-up works, but its activation email goes out through Gmail SMTP with credent
 
 *Recorded from a live run on an Android emulator against this app with the seeded accounts.*
 
-`automation/` drives this app through Appium in Chrome on an Android emulator: it swipes the deck by filters from one config file, types a templated first message to each new match, paces itself, stops at daily caps and writes a report with the reply rate of each template. Every command is a read only dry run unless `--live` is given, and it refuses any host that is not on the config's allowed list. It is for this app and its seeded accounts only: Tinder, Hinge, Bumble and Instagram all ban automation in their own terms, with the quotes in [docs/AUTOMATION.md](docs/AUTOMATION.md). Setup, the config, the safety defaults and the limits are in the same file.
+`automation/` drives this app through Appium in Chrome on an Android emulator: it swipes the deck by filters from one config file, types a templated first message to each new match, paces itself, stops at daily caps and writes a report with the reply rate of each template. Without `--live` every command is a dry run that changes nothing in the app (it only appends local rows to `automation/ledger.jsonl`), and it refuses any host that is not on the config's allowed list. It is for this app and its seeded accounts only: Tinder, Hinge, Bumble and Instagram all ban automation in their own terms, with the quotes in [docs/AUTOMATION.md](docs/AUTOMATION.md). Setup, the config, the safety defaults and the limits are in the same file.
 
 What broke: the first live run failed on the first message of a new conversation with `Cannot access 'data' before initialization`, a bug in `frontend/src/views/User/Matches.vue` (the cache update read a value its own call was still producing). It is fixed, and the same run passes.
 
 ## Tests
 
 - **Automation unit tests:** `python -m unittest discover -s automation/tests -v` runs 38 tests on the filters, templates, schedule, caps, report and the scheduled loop. `python automation/tests/mutation_check.py` breaks the rules in 21 small ways and requires the tests to turn red each time; all 21 are caught. Both run in CI.
-- **End to end on the emulator:** `python automation/e2e_appium_chatdaters.py` resets the database, runs a dry run and two live runs in Chrome on the emulator and checks 12 results against the real records. It needs a device, so it does not run in CI. After the app fix it passed on ten of eleven runs on 2026-10-25; the one failure was a race in the driver (it read a conversation before the thread had loaded), fixed, and the next five runs passed.
+- **End to end on the emulator:** `python automation/e2e_appium_chatdaters.py` resets the database, runs a dry run and two live runs in Chrome on the emulator and checks 12 results against the real records. It needs a device, so it does not run in CI. After the app fix it passed on ten of eleven runs on 2026-10-25 (from my own runs, the output is not saved); the one failure was a race in the driver (it read a conversation before the thread had loaded), fixed, and the next five runs passed.
 - **The rest of the app has no test suite.** The CI workflow in `.github/workflows/ci.yml` runs RuboCop, Brakeman, a schema load into Postgres and a Zeitwerk eager load for the API, and `npm ci` plus the Vite build for the frontend. On 2026-10-17 I ran the API half of Run it in a fresh clone (the stack, the seed, login for three accounts, the pending then matched sequence, and a stored message) and `npm install` plus `npm run build` for the frontend (it builds).
 
 ## Limits and not done
