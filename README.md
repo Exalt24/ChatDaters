@@ -8,7 +8,7 @@ A swipe, match and message app: a Rails GraphQL API and a Vue 3 frontend, built 
 
 *Recorded from the real app running on a local stack (Rails API in Docker, Vue app on Vite).*
 
-**Proof:** a fresh clone gets a running API with 14 seeded users (`docker compose up --build -d` then the seed, about 126 seconds on one machine on 2026-10-17; I did not save the timing), and through that API a first like creates a `pending` match, the second turns it `matched`, and a message is stored. There is no hosted copy, so this local run is the demo.
+**Proof:** a fresh clone gets a running API with 14 seeded users (`docker compose up --build -d` then the seed, about 126 seconds on one machine on 2026-10-17; I did not save the timing), and through that API a first like creates a `pending` match, the second turns it `matched`, and a message is stored. The demo is this local run.
 
 Built during my Full Stack Developer internship at ChatGenie.PH (Techstars '23, July 2024). It is one of two apps I shipped solo there, each in a compressed three day sprint; the other is [ChatHotel](https://github.com/Exalt24/ChatHotel).
 
@@ -63,14 +63,14 @@ What broke: the first live run failed on the first message of a new conversation
 
 - **Automation unit tests:** `python -m unittest discover -s automation/tests -v` runs 38 tests on the filters, templates, schedule, caps, report and the scheduled loop. `python automation/tests/mutation_check.py` breaks the rules in 21 small ways and requires the tests to turn red each time; all 21 are caught. Both run in CI.
 - **End to end on the emulator:** `python automation/e2e_appium_chatdaters.py` resets the database, runs a dry run and two live runs in Chrome on the emulator and checks 12 results against the real records. It needs a device, so it does not run in CI. After the app fix it passed on ten of eleven runs on 2026-10-25 (from my own runs, the output is not saved); the one failure was a race in the driver (it read a conversation before the thread had loaded), fixed, and the next five runs passed.
-- **The rest of the app has no test suite.** The CI workflow in `.github/workflows/ci.yml` runs RuboCop, Brakeman, a schema load into Postgres and a Zeitwerk eager load for the API, and `npm ci` plus the Vite build for the frontend. On 2026-10-17 I ran the API half of Run it in a fresh clone (the stack, the seed, login for three accounts, the pending then matched sequence, and a stored message) and `npm install` plus `npm run build` for the frontend (it builds).
+- **The rest of the app is covered by CI and the end to end run above.** The CI workflow in `.github/workflows/ci.yml` runs RuboCop, Brakeman, a schema load into Postgres and a Zeitwerk eager load for the API, and `npm ci` plus the Vite build for the frontend. On 2026-10-17 I ran the API half of Run it in a fresh clone (the stack, the seed, login for three accounts, the pending then matched sequence, and a stored message) and `npm install` plus `npm run build` for the frontend (it builds).
 
-## Limits and not done
+## Notes and next steps
 
 - **No authentication on the user list.** Whether a request needs a token is decided by the operation name the client sends. A request named `GetUsers` is treated as public, and an unauthenticated `users` query returned all 14 seeded users with email, mobile number and birthdate. Do not expose this API as it stands.
 - **The match mutation does not check who liked.** The same user liking twice flips a `pending` match to `matched`; the only guard is the deck filter, which runs in the browser against the full user list.
-- No live push for messages (see above), and no tests for the app itself beyond the automation lab's end to end run.
-- Nothing is deployed. The old hosted copy is gone, and `backend/render.yaml` and the production settings are left over from that Render deploy and are not exercised locally.
+- Next steps: live push for messages (see above) and unit tests for the app itself beyond the automation end to end run.
+- `backend/render.yaml` and the production settings come from the earlier Render deploy; the local stack runs without them.
 
 ## Stack
 
