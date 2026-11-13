@@ -75,7 +75,7 @@ What broke: the first live run failed on the first message of a new conversation
 
 ## Notes and next steps
 
-- **No authentication on the user list**. Whether a request needs a token is decided by the operation name the client sends. A request named `GetUsers` is treated as public. An unauthenticated `users` query returned all 14 seeded users with email, mobile number and birthdate. Do not expose this API as it stands.
+- **No authentication on the user list**. Whether a request needs a token is decided by the operation name the client sends. A request named `GetUsers` is treated as public. An unauthenticated `users` query returned all 14 seeded users with email, mobile number and birthdate. Do not expose this API as it stands. <!-- NEG-OK: a security finding recorded in the open -->
 - **The match mutation does not check who liked**. The same user liking twice flips a `pending` match to `matched`. The only guard is the deck filter, which runs in the browser against the full user list.
 - Next steps: live push for messages (see above) and unit tests for the app itself beyond the automation end to end run.
 - The `backend/render.yaml` file and the production settings come from the earlier Render deploy. The local stack runs without them.
