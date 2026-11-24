@@ -17,6 +17,17 @@ updates:
       interval: weekly
     cooldown:
       default-days: 7
+    ignore:
+      # primevue 4+ drops the primevue/resources/themes CSS this app imports and needs a styled-mode theme rewrite
+      - dependency-name: "primevue"
+        update-types: ["version-update:semver-major"]
+      # @vue/apollo-option 4.2.2 peers on @apollo/client ^3, and apollo-upload-client 19+ and graphql 17 need @apollo/client 4
+      - dependency-name: "@apollo/client"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "apollo-upload-client"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "graphql"
+        update-types: ["version-update:semver-major"]
     groups:
       weekly-npm:
         update-types: [minor, patch]
